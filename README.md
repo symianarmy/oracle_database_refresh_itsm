@@ -42,10 +42,20 @@ Like so:
 Also, if I run the last "finish" playbook immediately after the commented out "wrapper" + "actual" playbooks run, the last one also runs just fine. The "finish" playbook.
 But this is supposed to be ENTIRELY unattended, from opening/approving tasks to doing the work, no manual intervention of any kind. So I need them to work by calling themselves in the right order. "The "wrapper", the "actual", then the "finish".
 
-Please help.
+
+Two modified (because the intended way doesnt work) example runs below:
 
 
-Runs below:
+
+
+
+
+
+
+
+
+
+
 
 +++++++++++++++++++++++++++++++++++++
 
