@@ -64,5 +64,3 @@
         delegate_to: localhost
 
     - import_playbook: itsm_oracle_refresh_actual.yml
-
-
