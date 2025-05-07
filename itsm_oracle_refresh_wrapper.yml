@@ -1,80 +1,68 @@
 ---
     - name: RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh
       hosts: localhost
-#      gather_facts: true
+      gather_facts: true
       vars_files:
         - vars/main.yml
 
       tasks:
- 
-        - name: Auto-Create "RFRSH2025Q2 Omni-Client PROD_2_UAT" Task in ServiceNow | prepare oracle_schema_refresh
-          servicenow.itsm.incident:
-            # Instance data
-            instance:
-              host: "{{ sn_instance}}"
-              username: "{{ sn_username }}"
-              password:  "{{ sn_password }}"
-            close_code: 003
-            state: open
+
+      - name: Auto-Create "RFRSH2025Q2 Omni-Client PROD_2_UAT" Task in ServiceNow | prepare oracle_schema_refresh
+        servicenow.itsm.incident:
+          instance:
+            host: "{{ sn_instance}}"
+            username: "{{ sn_username }}"
+            password:  "{{ sn_password }}"
+          close_code: 003
+          state: open
             # No sys_id or number because we are creating a new incident
             # Common parameters
-            caller: admin
-            short_description: Refresh All UAT Databases from PROD
-            impact: low
-            urgency: medium
-            # Other data
-            other:
-              problem_id: 00011
-          register: refresh_new_inc_out
+          caller: admin
+          short_description: Refresh All UAT Databases from PROD
+          impact: low
+          urgency: medium
+          other:
+            problem_id: 00011
+        register: refresh_new_inc_out
 
-        - debug:
-            msg: Ansible Starting the Quarterly RFRSH2025Q2 Omni-Client PROD_2_UAT | prepare oracle_schema_refresh
+      - debug:
+          msg: Ansible Starting the Quarterly RFRSH2025Q2 Omni-Client PROD_2_UAT | prepare oracle_schema_refresh
 
-        - name: Change ServiceNow Refresh Task State to In-Progress | prepare oracle_schema_refresh
-          servicenow.itsm.incident:
-            instance:
-              host: "{{ sn_instance}}"
-              username: "{{ sn_username }}"
-              password:  "{{ sn_password }}"
-            sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
-            state: in_progress
+      - name: Change ServiceNow Refresh Task State to In-Progress | prepare oracle_schema_refresh
+        servicenow.itsm.incident:
+          instance:
+            host: "{{ sn_instance}}"
+            username: "{{ sn_username }}"
+            password:  "{{ sn_password }}"
+          sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
+          state: in_progress
 
-        - debug:
-            msg: Ansible Verified & Opened an Oracle RFRSH2025Q2 Omni-Client PROD_2_UAT Task {{ refresh_new_inc_out.record.task_effective_number }} in ServiceNow | execute oracle_schema_refresh
+      - debug:
+          msg: Ansible Verified & Opened an Oracle RFRSH2025Q2 Omni-Client PROD_2_UAT Task {{ refresh_new_inc_out.record.task_effective_number }} in ServiceNow | execute oracle_schema_refresh
+       
+      - name: Prepare Oracle Refresh Process | execute oracle_schema_refresh
+        servicenow.itsm.incident_info:
+          instance:
+            host: "{{ sn_instance}}"
+            username: "{{ sn_username }}"
+            password:  "{{ sn_password }}"
+          sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
+        register: refresh_execute_out
 
-        - name: Prepare Oracle Refresh Process | execute oracle_schema_refresh
-          servicenow.itsm.incident_info:
-            # Instance data
-            instance:
-              host: "{{ sn_instance}}"
-              username: "{{ sn_username }}"
-              password:  "{{ sn_password }}"
-            sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
-          register: refresh_execute_out
+      - debug:
+          msg: Ansible Executing RFRSH2025Q2 Omni-Client PROD_2_UAT Task {{ refresh_new_inc_out.record.task_effective_number }}
 
-        - debug:
-            msg: Ansible Executing RFRSH2025Q2 Omni-Client PROD_2_UAT Task {{ refresh_new_inc_out.record.task_effective_number }}
+      - name: Cache the Refresh Task SYS_ID for All Playbooks to Re-Use | prepare oracle_database_refresh
+        ansible.builtin.set_fact:
+          sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
+          cacheable: yes
 
-#        - name: run an Oracle refresh playbook
-#        - name: Execute Included Oracle Refresh Playbook | execute oracle_schema_refresh
-#          include: itsm_oracle_refresh_actual.yml
+      - name: Write the Refresh Task SYS_ID Variable to the Disk on CTRL+ Node Alone | prepare oracle_database_refresh
+        copy:
+          content: "{{ refresh_new_inc_out.record.sys_id }}"
+          dest: "/tmp/refresh_task_sid.txt"
+        delegate_to: localhost
 
-        - debug:
-            msg: Ansible Closing the RFRSH2025Q2 Omni-Client PROD_2_UAT Task {{ refresh_new_inc_out.record.task_effective_number }}
+    - import_playbook: itsm_oracle_refresh_actual.yml
 
-        - name: Close ServiceNow Refresh Task as Completed | cleanup oracle_schema_refresh
-          servicenow.itsm.incident:
-            instance:
-              host: "{{ sn_instance}}"
-              username: "{{ sn_username }}"
-              password:  "{{ sn_password }}"
-            sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
-            state: closed
-            close_code: "2025Q5 Refreshed (Omni-CLient UAT)"
-            close_notes: "Closed"
-          register: closing_notes_out
 
-        - debug:
-            msg: Ansible Has Now Completed the Quarterly RFRSH2025Q2 Omni-Client PROD_2_UAT Task by Executing {{ refresh_new_inc_out.record.task_effective_number }}, Refresh ServiceNow SYS_ID "{{ refresh_new_inc_out.record.sys_id }}"
-
-#          when: "{{ refresh_new_inc_out.record.upon_approval }}" == "proceed"
