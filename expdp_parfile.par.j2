@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+USERID={{ ansible_local.export.localfacts.export_fact_oracle_export_user_name }}/{{ ansible_local.export.localfacts.export_fact_oracle_export_user_password }}@{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}
+DIRECTORY={{ ansible_local.export.localfacts.export_fact_oracle_export_datapump_dir }}
+DUMPFILE=export_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.dmp
+LOGFILE=log_export_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.log
+SCHEMAS={{ ansible_local.export.localfacts.export_fact_schema  }}
+PARALLEL=4
+
