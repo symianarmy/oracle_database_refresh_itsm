@@ -76,4 +76,5 @@
     when: ansible_local.export.localfacts.export_fact_oracle_database_environment_purpose == "UAT"
     register: imp_details
 
-  - import_playbook: itsm_oracle_refresh_finish.yml   
+- import_playbook: itsm_oracle_refresh_finish.yml   
+
