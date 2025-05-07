@@ -59,5 +59,116 @@ localhost                  : ok=10   changed=3    unreachable=0    failed=0    s
 
 
 
++++++++++++++++++++
+
+[ansible_admin@ctrl ansible]$ ansible-playbook ./playbooks/itsm_oracle_refresh_actual.yml 
+
+PLAY [db_servers] **********************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************************************************************************************************************
+[WARNING]: Platform linux on host 192.168.1.64 is using the discovered Python interpreter at /usr/libexec/platform-python, but future installation of another Python interpreter could change the meaning of that path. See
+https://docs.ansible.com/ansible-core/2.14/reference_appendices/interpreter_discovery.html for more information.
+ok: [192.168.1.64]
+[WARNING]: Platform linux on host 192.168.1.108 is using the discovered Python interpreter at /usr/libexec/platform-python, but future installation of another Python interpreter could change the meaning of that path. See
+https://docs.ansible.com/ansible-core/2.14/reference_appendices/interpreter_discovery.html for more information.
+ok: [192.168.1.108]
+
+TASK [debug] ***************************************************************************************************************************************************************************************************************************
+ok: [192.168.1.64] => {
+    "ansible_distribution": "OracleLinux"
+}
+ok: [192.168.1.108] => {
+    "ansible_distribution": "OracleLinux"
+}
+
+TASK [Confirm Local Facts for Each RDS Oracle Instance being Refreshed from a PROD Schema | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] **********************************************
+ok: [192.168.1.64] => {
+    "ansible_local": {
+        "export": {
+            "localfacts": {
+                "export_fact_ansible_env_path": "/home/ansible/admin",
+                "export_fact_container_database_type": "legacy",
+                "export_fact_export_flag": "on",
+                "export_fact_oracle_database_environment_purpose": "PROD",
+                "export_fact_oracle_database_environment_readonly": "true",
+                "export_fact_oracle_export_datapump_dir": "DATA_PUMP_DIR",
+                "export_fact_oracle_export_user_name": "source",
+                "export_fact_oracle_export_user_password": <REDACTED>,
+                "export_fact_oracle_listener_port_number": "1521",
+                "export_fact_oracle_local_hostname": "lnx072",
+                "export_fact_oracle_rdbms_version": "19.0.0",
+                "export_fact_oracle_sid_name": "SRCPROD",
+                "export_fact_oracle_tns_admin": "/u01/app/oracle/product/19c/dbhome_1/network/admin",
+                "export_fact_rdbms_home": "/u01/app/oracle/product/19c/dbhome_1",
+                "export_fact_schema": "source",
+                "export_fact_shared_scratchpad_s3_bucket": "/mnt/hgfs/Linux_share/scratchpad/",
+                "import_fact_oracle_local_hostname": "",
+                "import_fact_oracle_sid_name": "",
+                "import_fact_schema": ""
+            }
+        }
+    }
+}
+ok: [192.168.1.108] => {
+    "ansible_local": {
+        "export": {
+            "localfacts": {
+                "export_fact_ansible_env_path": "/home/ansible_admin",
+                "export_fact_container_database_type": "legacy",
+                "export_fact_export_flag": "on",
+                "export_fact_oracle_database_environment_purpose": "UAT",
+                "export_fact_oracle_database_environment_readonly": "false",
+                "export_fact_oracle_export_datapump_dir": "DATA_PUMP_DIR",
+                "export_fact_oracle_export_user_name": "source",
+                "export_fact_oracle_export_user_password": <REDACTED>,
+                "export_fact_oracle_listener_port_number": "1521",
+                "export_fact_oracle_local_hostname": "lnx073",
+                "export_fact_oracle_rdbms_version": "19.0.0",
+                "export_fact_oracle_sid_name": "SRCUAT",
+                "export_fact_oracle_tns_admin": "/u01/app/oracle/product/19c/dbhome_1/network/admin",
+                "export_fact_rdbms_home": "/u01/app/oracle/product/19c/dbhome_1",
+                "export_fact_schema": "source",
+                "export_fact_shared_scratchpad_s3_bucket": "/mnt/hgfs/Linux_share/scratchpad/",
+                "import_fact_oracle_local_hostname": "lnx072",
+                "import_fact_oracle_sid_name": "SRCPROD",
+                "import_fact_schema": "source"
+            }
+        }
+    }
+}
+
+TASK [Check if Lockfile Exists or an Earlier Refresh Still Running | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] *********************************************************************
+ok: [192.168.1.64]
+ok: [192.168.1.108]
+
+TASK [Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] **************************************************************************************************
+changed: [192.168.1.64]
+changed: [192.168.1.108]
+
+TASK [Generate Local SOURCE Db Export ParFile from a Centralized JINJA Refresh Template | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ************************************************
+changed: [192.168.1.64]
+changed: [192.168.1.108]
+
+TASK [Export Source Schema to Scratchpad Usng the Custom Parfile | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ***********************************************************************
+skipping: [192.168.1.108]
+changed: [192.168.1.64]
+
+TASK [Generate One or More Target Schema Refresh ParFiles from a Centralized JINJA Refresh Template | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ************************************
+skipping: [192.168.1.64]
+changed: [192.168.1.108]
+
+TASK [Import into the Destination Db Usng the Custom Import ParFile | execute oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ********************************************************************
+skipping: [192.168.1.64]
+changed: [192.168.1.108]
+
+PLAY RECAP *****************************************************************************************************************************************************************************************************************************
+192.168.1.108              : ok=8    changed=4    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+192.168.1.64               : ok=7    changed=3    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+[ansible_admin@ctrl ansible]$ 
+
+
+
+
 
 
