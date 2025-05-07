@@ -13,7 +13,7 @@
 
   - debug: var=ansible_distribution
 
-  - name: Confirm Local Facts for Each RDS Oracle Instance being Refreshed from a PROD Schema | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
+  - name: Confirm Local Facts for Each Oracle Instance being Refreshed | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
     debug: var=ansible_local
 
 ##  - name: Verify with ServiceNow ITSM the Refresh Task is Scheduled for Now, Has Been Approved and is in Implementation State | prepare oracle_database_refresh
@@ -76,10 +76,4 @@
     when: ansible_local.export.localfacts.export_fact_oracle_database_environment_purpose == "UAT"
     register: imp_details
 
-
-  
-
-
-
-
-
+  - import_playbook: itsm_oracle_refresh_finish.yml   
