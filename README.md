@@ -8,19 +8,20 @@ The example below refreshes:
 - a UAT Oracle database SRCUAT on [192.168.1.108] lnx072
 - from its PROD database SRCPROD on [192.168.1.64] lnx073
 - from an Ansible CTRL+ node, mentioned only as a "localhost" from which the main "wrapper" playbook is launched.
+- the close-loop ServiceNow ITSM server overseeing the approvals and scheduling is a trial instance: https://dev336605.service-now.com
 
-We could add an additional array of lower environment databases, lets say DEV, CERT, MO, VAR, PRPROD - all within the same hosts file.
+We could add an additional array of lower environment databases, lets say DEV, CERT, MO, VAR, PRPROD - all within the same hosts file. That is coming.
 
 The functionality relies on :
-1. Local custom facts;
-2. Ansible JINJA2 templates for import/export.
+1. Local custom facts, this can be replaced with AWS tags.
+2. Ansible JINJA2 templates for import/export parfiles.
+
 
 To run this from the Ansible CTRL+ node:
 
-[ansible_admin@ctrl ansible]$ ansible-playbook ./playbooks/itsm_oracle_refresh_wrapper.yml
+
 
 [ansible_admin@ctrl ansible]$ ansible-playbook ./playbooks/itsm_oracle_refresh_wrapper.yml 
-[WARNING]: Collection servicenow.itsm does not support Ansible version 2.14.17
 
 PLAY [RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh] ***************************************************************************************************************************************
 
@@ -164,7 +165,6 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=9    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
 [ansible_admin@ctrl ansible]$ ansible-playbook ./playbooks/itsm_oracle_refresh_finish.yml
-[WARNING]: Collection servicenow.itsm does not support Ansible version 2.14.17
 
 PLAY [RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh] ***************************************************************************************************************************************
 
@@ -479,158 +479,7 @@ ok: [localhost] => {
 PLAY RECAP *******************************************************************************************************************************************************************************************************
 localhost                  : ok=8    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-[ansible_admin@ctrl ansible]$ ansible-playbook ./playbooks/itsm_oracle_refresh_wrapper.yml 
-[WARNING]: Collection servicenow.itsm does not support Ansible version 2.14.17
-
-PLAY [RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh] ***************************************************************************************************************************************
-
-TASK [Gathering Facts] *******************************************************************************************************************************************************************************************
-ok: [localhost]
-
-TASK [Auto-Create "RFRSH2025Q2 Omni-Client PROD_2_UAT" Task in ServiceNow | prepare oracle_schema_refresh] *******************************************************************************************************
-[WARNING]: Encountered unknown value open while mapping field state.
-[WARNING]: Encountered unknown value 3 while mapping field close_code.
-[WARNING]: Encountered unknown value  while mapping field close_code.
-changed: [localhost]
-
-TASK [debug] *****************************************************************************************************************************************************************************************************
-ok: [localhost] => {
-    "msg": "Ansible Starting the Quarterly RFRSH2025Q2 Omni-Client PROD_2_UAT | prepare oracle_schema_refresh"
-}
-
-TASK [Change ServiceNow Refresh Task State to In-Progress | prepare oracle_schema_refresh] ***********************************************************************************************************************
-changed: [localhost]
-
-TASK [debug] *****************************************************************************************************************************************************************************************************
-ok: [localhost] => {
-    "msg": "Ansible Verified & Opened an Oracle RFRSH2025Q2 Omni-Client PROD_2_UAT Task INC0010126 in ServiceNow | execute oracle_schema_refresh"
-}
-
-TASK [Prepare Oracle Refresh Process | execute oracle_schema_refresh] ********************************************************************************************************************************************
-ok: [localhost]
-
-TASK [debug] *****************************************************************************************************************************************************************************************************
-ok: [localhost] => {
-    "msg": "Ansible Executing RFRSH2025Q2 Omni-Client PROD_2_UAT Task INC0010126"
-}
-
-TASK [Cache the Refresh Task SYS_ID for All Playbooks to Re-Use | prepare oracle_database_refresh] ***************************************************************************************************************
-ok: [localhost]
-
-TASK [Write the Refresh Task SYS_ID Variable to the Disk on CTRL+ Node Alone | prepare oracle_database_refresh] **************************************************************************************************
-changed: [localhost]
-
-PLAY [db_servers] ************************************************************************************************************************************************************************************************
-
-TASK [Gathering Facts] *******************************************************************************************************************************************************************************************
-[WARNING]: Platform linux on host 192.168.1.64 is using the discovered Python interpreter at /usr/libexec/platform-python, but future installation of another Python interpreter could change the meaning of that
-path. See https://docs.ansible.com/ansible-core/2.14/reference_appendices/interpreter_discovery.html for more information.
-ok: [192.168.1.64]
-[WARNING]: Platform linux on host 192.168.1.108 is using the discovered Python interpreter at /usr/libexec/platform-python, but future installation of another Python interpreter could change the meaning of
-that path. See https://docs.ansible.com/ansible-core/2.14/reference_appendices/interpreter_discovery.html for more information.
-ok: [192.168.1.108]
-
-TASK [debug] *****************************************************************************************************************************************************************************************************
-ok: [192.168.1.64] => {
-    "ansible_distribution": "OracleLinux"
-}
-ok: [192.168.1.108] => {
-    "ansible_distribution": "OracleLinux"
-}
-
-TASK [Confirm Local Facts for Each Oracle Instance being Refreshed | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ***********************************************
-ok: [192.168.1.64] => {
-    "ansible_local": {
-        "export": {
-            "localfacts": {
-                "export_fact_ansible_env_path": "/home/ansible/admin",
-                "export_fact_container_database_type": "legacy",
-                "export_fact_export_flag": "on",
-                "export_fact_oracle_database_environment_purpose": "PROD",
-                "export_fact_oracle_database_environment_readonly": "true",
-                "export_fact_oracle_export_datapump_dir": "DATA_PUMP_DIR",
-                "export_fact_oracle_export_user_name": "source",
-                "export_fact_oracle_export_user_password": <REDACTED>,
-                "export_fact_oracle_listener_port_number": "1521",
-                "export_fact_oracle_local_hostname": "lnx072",
-                "export_fact_oracle_rdbms_version": "19.0.0",
-                "export_fact_oracle_sid_name": "SRCPROD",
-                "export_fact_oracle_tns_admin": "/u01/app/oracle/product/19c/dbhome_1/network/admin",
-                "export_fact_rdbms_home": "/u01/app/oracle/product/19c/dbhome_1",
-                "export_fact_schema": "source",
-                "export_fact_shared_scratchpad_s3_bucket": "/mnt/hgfs/Linux_share/scratchpad/",
-                "import_fact_oracle_local_hostname": "",
-                "import_fact_oracle_sid_name": "",
-                "import_fact_schema": ""
-            }
-        }
-    }
-}
-ok: [192.168.1.108] => {
-    "ansible_local": {
-        "export": {
-            "localfacts": {
-                "export_fact_ansible_env_path": "/home/ansible_admin",
-                "export_fact_container_database_type": "legacy",
-                "export_fact_export_flag": "on",
-                "export_fact_oracle_database_environment_purpose": "UAT",
-                "export_fact_oracle_database_environment_readonly": "false",
-                "export_fact_oracle_export_datapump_dir": "DATA_PUMP_DIR",
-                "export_fact_oracle_export_user_name": "source",
-                "export_fact_oracle_export_user_password": <REDACTED>,
-                "export_fact_oracle_listener_port_number": "1521",
-                "export_fact_oracle_local_hostname": "lnx073",
-                "export_fact_oracle_rdbms_version": "19.0.0",
-                "export_fact_oracle_sid_name": "SRCUAT",
-                "export_fact_oracle_tns_admin": "/u01/app/oracle/product/19c/dbhome_1/network/admin",
-                "export_fact_rdbms_home": "/u01/app/oracle/product/19c/dbhome_1",
-                "export_fact_schema": "source",
-                "export_fact_shared_scratchpad_s3_bucket": "/mnt/hgfs/Linux_share/scratchpad/",
-                "import_fact_oracle_local_hostname": "lnx072",
-                "import_fact_oracle_sid_name": "SRCPROD",
-                "import_fact_schema": "source"
-            }
-        }
-    }
-}
-
-TASK [Check if Lockfile Exists or an Earlier Refresh Still Running | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ***********************************************
-ok: [192.168.1.64]
-ok: [192.168.1.108]
-
-TASK [Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] ****************************************************************************
-changed: [192.168.1.64]
-changed: [192.168.1.108]
-
-TASK [Generate Local SOURCE Db Export ParFile from a Centralized JINJA Refresh Template | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] **************************
-changed: [192.168.1.64]
-changed: [192.168.1.108]
-
-TASK [Export Source Schema to Scratchpad Usng the Custom Parfile | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] *************************************************
-skipping: [192.168.1.108]
-changed: [192.168.1.64]
-
-TASK [Generate One or More Target Schema Refresh ParFiles from a Centralized JINJA Refresh Template | prepare oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] **************
-skipping: [192.168.1.64]
-changed: [192.168.1.108]
-
-TASK [Import into the Destination Db Usng the Custom Import ParFile | execute oracle_database_refresh of the "source" schema in the "SRCPROD" Database on "lnx072"] **********************************************
-skipping: [192.168.1.64]
-changed: [192.168.1.108]
-
-PLAY [RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh] ***************************************************************************************************************************************
-
-TASK [Gathering Facts] *******************************************************************************************************************************************************************************************
-ok: [localhost]
-
-TASK [debug] *****************************************************************************************************************************************************************************************************
-ok: [localhost] => {
-    "msg": "Version 3.2. Ansible is Closing the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful"
-}
-
-TASK [Close ServiceNow Refresh Task as Completed | cleanup oracle_schema_refresh] ********************************************************************************************************************************
-[WARNING]: Encountered unknown value 2025Q5 Refreshed (Omni-CLient UAT) while mapping field close_code.
-changed: [localhost]
+[localhost]
 
 TASK [debug] *****************************************************************************************************************************************************************************************************
 ok: [localhost] => {
