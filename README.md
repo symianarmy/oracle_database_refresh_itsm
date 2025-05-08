@@ -10,15 +10,14 @@ The example below refreshes:
 - from an Ansible CTRL+ node, mentioned only as a "localhost" from which the main "wrapper" playbook is launched.
 - the close-loop ServiceNow ITSM server overseeing the approvals and scheduling is a trial instance: https://dev336605.service-now.com
 
-We could add an additional array of lower environment databases, lets say DEV, CERT, MO, VAR, PRPROD - all within the same hosts file. That is coming.
+We could add an additional array of lower environment databases added to this particular UAT refresh, lets say DEV, STG, CERT, MO, VAR, PERF, PRPROD - all defined within the same hosts file or by using a dedcated ServiceNow or Ansible JINJA2 template. That functionality is coming.
 
 The functionality relies on :
 1. Local custom facts, this can be replaced with AWS tags.
-2. Ansible JINJA2 templates for import/export parfiles.
+2. Ansible JINJA2 templates for dynamic creation of import/export parfiles.
 
 
 To run this from the Ansible CTRL+ node:
-
 
 
 [ansible_admin@ctrl ansible]$ ansible-playbook ./playbooks/itsm_oracle_refresh_wrapper.yml 
