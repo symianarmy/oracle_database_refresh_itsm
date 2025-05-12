@@ -1,0 +1,59 @@
+---
+- hosts: db_servers_dev
+  become: yes
+  gather_facts: True
+
+  vars:
+    ora_user: oracle
+    ora_group1: dba
+    ora_group2: oinstall
+    ora_s3_scratchpad: "/mnt/hgfs/Linux_share/scratchpad/s3"
+
+  tasks:
+
+  - debug: var=ansible_distribution
+
+  - name: Version 2.7. Confirm Local Facts for Each Oracle Instance being Refreshed "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+    debug: var=ansible_local
+
+
+##  - name: Verify with ServiceNow ITSM the Refresh Task is Scheduled for Now, Has Been Approved and is in Implementation State | prepare oracle_database_refresh
+##    template:
+##        src: /etc/ansible/templates/oggca.rsp.j2
+##        dest: /tmp/ogg_add_depl_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_version }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_bu_name }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_environment_type }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_next_depl_iterator }}.rsp
+##        owner: oracle
+##        group: oinstall
+##        mode: '0775'
+
+  - name: Check if Lockfile Exists or an Earlier Refresh Still Running for "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+    stat:
+      path: "{{ ora_s3_scratchpad }}/lockfile_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
+    register: file_status_dev
+
+  - name: Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+    ansible.builtin.file:
+      path: "{{ ora_s3_scratchpad }}/lockfile_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
+      state: touch
+      mode: '0644'
+    when: 
+      - not file_status_dev.stat.exists
+
+  - name: Generate One or More Target Schema Import ParFiles from a Centralized JINJA Refresh Template | itsm_oracle_refresh_actual_uat
+    ansible.builtin.template:
+      src: templates/impdp_parfile.par.j2
+      dest: "{{ ora_s3_scratchpad }}/parfile_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.par"
+
+  - name: Import into the Destination Db Usng the Custom Import ParFile | execute oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+    shell: "impdp parfile={{ ora_s3_scratchpad }}/parfile_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.par > {{ ora_s3_scratchpad }}/log_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.log" 
+    environment:
+      ORACLE_SID: "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}"
+      ORACLE_HOME: "{{ ansible_local.export.localfacts.export_fact_rdbms_home }}"
+      LD_LIBRARY_PATH: "{{ ansible_local.export.localfacts.export_fact_rdbms_home }}/lib"
+      PATH: "/usr/sbin:/usr/local/bin:/usr/bin:{{ ansible_local.export.localfacts.export_fact_rdbms_home }}/bin"
+      become: true
+      become_method: su
+      become_user: oracle
+    register: imp_details_dev
+
+
+

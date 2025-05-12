@@ -1,0 +1,43 @@
+---
+    - name: RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh
+      hosts: localhost
+      gather_facts: true
+      vars_files:
+        - vars/main.yml
+
+      tasks:
+     
+        - debug:
+            msg: Version 3.2. Ansible is Closing the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful 
+
+        - name: Close ServiceNow Refresh Task as Completed | cleanup oracle_schema_refresh
+          servicenow.itsm.incident:
+            instance:
+              host: "{{ sn_instance}}"
+              username: "{{ sn_username }}"
+              password:  "{{ sn_password }}"
+            sys_id:  "{{ lookup('ansible.builtin.file', '/tmp/refresh_task_sid.txt') }}"
+            state: closed
+            close_code: "2025Q5 Refreshed (Omni-CLient UAT)"
+            close_notes: "Closed"
+          register: closing_notes_out
+
+        - debug:
+            msg: Ansible is Entering the Following in the Closing Notes (RFRSH2025Q2 Omni-Client PROD_2_UAT Task) 
+
+        - debug: var=closing_notes_out
+         
+        - name: Cleanup the Temp Refresh Files | cleanup oracle_schema_refresh
+          ansible.builtin.file:
+            path: /tmp/refresh_task_sid.txt
+            state: absent
+          delegate_to: localhost
+          ignore_errors: True
+
+        - debug:
+            msg: Refresh Task SYS_ID Purged from Schedule and Ansible CTRL+ Disk 
+
+        - debug:
+            msg: Ansible Has Now Closed the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful. Thank You and Have a Nice Day.
+          
+       
