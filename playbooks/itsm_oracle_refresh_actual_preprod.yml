@@ -13,24 +13,15 @@
 
   - debug: var=ansible_distribution
 
-  - name: Version 2.7. Confirm Local Facts for Each Oracle Instance being Refreshed | itsm_oracle_refrsh_actual 
+  - name: Version 2.7. Confirm Local Facts for Each Oracle Instance being Refreshed | itsm_oracle_refresh_actual_preprod
     debug: var=ansible_local
 
-
-##  - name: Verify with ServiceNow ITSM the Refresh Task is Scheduled for Now, Has Been Approved and is in Implementation State | prepare oracle_database_refresh
-##    template:
-##        src: /etc/ansible/templates/oggca.rsp.j2
-##        dest: /tmp/ogg_add_depl_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_version }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_bu_name }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_environment_type }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_next_depl_iterator }}.rsp
-##        owner: oracle
-##        group: oinstall
-##        mode: '0775'
-
-  - name: Check if Lockfile Exists or an Earlier Refresh Still Running for "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | prepare oracle_database_refresh of the | itsm_oracle_refresh_actual_cert
+  - name: Check if Lockfile Exists or an Earlier Refresh Still Running for "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_preprod
     stat:
       path: "{{ ora_s3_scratchpad }}/lockfile_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
     register: file_status_cert
 
-  - name: Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_cert
+  - name: Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_preprod
     ansible.builtin.file:
       path: "{{ ora_s3_scratchpad }}/lockfile_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
       state: touch
@@ -38,7 +29,7 @@
     when: 
       - not file_status_cert.stat.exists
 
-  - name: Generate One or More Target Schema Import ParFiles from a Centralized JINJA Refresh Template | itsm_oracle_refresh_actual_cert
+  - name: Generate One or More Target Schema Import ParFiles from a Centralized JINJA Refresh Template | itsm_oracle_refresh_actual_preprod
     ansible.builtin.template:
       src: templates/impdp_parfile.par.j2
       dest: "{{ ora_s3_scratchpad }}/parfile_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.par"

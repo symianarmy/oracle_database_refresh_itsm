@@ -13,7 +13,7 @@
 
   - debug: var=ansible_distribution
 
-  - name: Version 2.7. Confirm Local Facts for Each Oracle Instance being Refreshed "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+  - name: Version 2.7. Confirm Local Facts for Each Oracle Instance being Refreshed "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
     debug: var=ansible_local
 
 
@@ -25,12 +25,12 @@
 ##        group: oinstall
 ##        mode: '0775'
 
-  - name: Check if Lockfile Exists or an Earlier Refresh Still Running for "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+  - name: Check if Lockfile Exists or an Earlier Refresh Still Running for "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
     stat:
       path: "{{ ora_s3_scratchpad }}/lockfile_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
     register: file_status_dev
 
-  - name: Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+  - name: Create Lockfile if Doesnt Exist | prepare oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
     ansible.builtin.file:
       path: "{{ ora_s3_scratchpad }}/lockfile_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}"
       state: touch
@@ -38,12 +38,12 @@
     when: 
       - not file_status_dev.stat.exists
 
-  - name: Generate One or More Target Schema Import ParFiles from a Centralized JINJA Refresh Template | itsm_oracle_refresh_actual_uat
+  - name: Generate One or More Target Schema Import ParFiles from a Centralized JINJA Refresh Template | itsm_oracle_refresh_actual_dev
     ansible.builtin.template:
       src: templates/impdp_parfile.par.j2
       dest: "{{ ora_s3_scratchpad }}/parfile_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.par"
 
-  - name: Import into the Destination Db Usng the Custom Import ParFile | execute oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_uat
+  - name: Import into the Destination Db Usng the Custom Import ParFile | execute oracle_database_refresh of the "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
     shell: "impdp parfile={{ ora_s3_scratchpad }}/parfile_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.par > {{ ora_s3_scratchpad }}/log_import_{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}_{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}_{{ ansible_local.export.localfacts.export_fact_schema }}.log" 
     environment:
       ORACLE_SID: "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}"

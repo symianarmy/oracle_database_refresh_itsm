@@ -1,5 +1,5 @@
 ---
-    - name: RFRSH2025Q2 Omni-Client PROD_2_UAT | announce oracle_schema_refresh
+    - name: Cleanup after RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task | itsm_oracle_refresh_finish
       hosts: localhost
       gather_facts: true
       vars_files:
@@ -8,7 +8,7 @@
       tasks:
      
         - debug:
-            msg: Version 3.2. Ansible is Closing the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful 
+            msg: Version 3.2. Ansible is Closing the RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task as Successful | itsm_oracle_refresh_finish
 
         - name: Close ServiceNow Refresh Task as Completed | cleanup oracle_schema_refresh
           servicenow.itsm.incident:
@@ -23,11 +23,11 @@
           register: closing_notes_out
 
         - debug:
-            msg: Ansible is Entering the Following in the Closing Notes (RFRSH2025Q2 Omni-Client PROD_2_UAT Task) 
+            msg: Ansible is Entering the Following in the Closing Notes (RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task) | itsm_oracle_refresh_finish
 
         - debug: var=closing_notes_out
          
-        - name: Cleanup the Temp Refresh Files | cleanup oracle_schema_refresh
+        - name: Cleanup the Temp Refresh Files so the Next Refresh Wont Fail | itsm_oracle_refresh_finish
           ansible.builtin.file:
             path: /tmp/refresh_task_sid.txt
             state: absent
@@ -35,9 +35,9 @@
           ignore_errors: True
 
         - debug:
-            msg: Refresh Task SYS_ID Purged from Schedule and Ansible CTRL+ Disk 
+            msg: Ansible Has Flashed the Neuralyzer Flashy Thingy from the Men in Black and Purged SYS-ID from Memory 
 
         - debug:
-            msg: Ansible Has Now Closed the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful. Thank You and Have a Nice Day.
+            msg: Ansible Has Now Closed the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful. Thank You and Have a Nice Day!
           
        
