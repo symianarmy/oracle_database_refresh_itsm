@@ -1,6 +1,6 @@
 ---
     - name: RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV TemplCAB-Pre-Approved V1.3.Draft | announce oracle_schema_refresh
-      hosts: localhost
+      hosts: ansible_ctrl+
       gather_facts: true
       vars_files:
         - vars/main.yml

@@ -1,6 +1,6 @@
 ---
     - name: Cleanup after RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task | itsm_oracle_refresh_finish
-      hosts: localhost
+      hosts: ansible_ctrl+
       gather_facts: true
       vars_files:
         - vars/main.yml
