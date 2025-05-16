@@ -1,13 +1,13 @@
 ---
-    - name: RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV TemplCAB-Pre-Approved V1.3.Draft | announce oracle_schema_refresh
-      hosts: ansible_ctrl+
+    - name: Automated RFRSH-2025-Q3 Omni-Client PROD=>PREPROD=>UAT=>DEV TemplCAB-Pre-Approved V1.3.Draft | itsm_oracle_refresh_wrapper
+      hosts: localhost
       gather_facts: true
       vars_files:
         - vars/main.yml
 
       tasks:
 
-      - name: Auto-Create RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task in ServiceNow Using Template | itsm_oracle_refresh_wrapper
+      - name: Create an "Oracle Database RFRSH-2025-Q3 Omni-Client PROD=>CERT=>UAT=>DEV" Task in ServiceNow | itsm_oracle_refresh_wrapper
         servicenow.itsm.incident:
           instance:
             host: "{{ sn_instance}}"
@@ -18,7 +18,7 @@
             # No sys_id or number because we are creating a new incident
             # Common parameters
           caller: admin
-          short_description: Refresh All Lower Environment Databases from PROD
+          short_description: Refresh All the Lower Environment Databases from PROD
           impact: low
           urgency: medium
           other:
@@ -26,9 +26,9 @@
         register: refresh_new_inc_out
 
       - debug:
-          msg: Ansible is Starting the Quarterly RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task | itsm_oracle_refresh_wrapper
+          msg: Ansible is Starting the Quarterly Oracle Database Oracle Database RFRSH-2025-Q3 Omni-Client PROD=>CERT=>UAT=>DEV Task | itsm_oracle_refresh_wrapper
 
-      - name: Change ServiceNow Refresh Task State to In-Progress | itsm_oracle_refresh_wrapper
+      - name: Change the New ServiceNow Refresh Task State to "In-Progress" | itsm_oracle_refresh_wrapper
         servicenow.itsm.incident:
           instance:
             host: "{{ sn_instance}}"
@@ -38,9 +38,9 @@
           state: in_progress
 
       - debug:
-          msg: Ansible Has Been Notified the RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task is Now Approved {{ refresh_new_inc_out.record.task_effective_number }} in ServiceNow | itsm_oracle_refresh_wrapper
+          msg: Ansible Verified the Timing and Validity of the Approvals for the Oracle Database RFRSH-2025-Q3 Omni-Client PROD=>CERT=>UAT=>DEV Task {{ refresh_new_inc_out.record.task_effective_number }} in ServiceNow | itsm_oracle_refresh_wrapper
        
-      - name: Prepare the Oracle Refresh Task for Implementation | itsm_oracle_refresh_wrapper
+      - name: Prepare Oracle Refresh Process | itsm_oracle_refresh_wrapper
         servicenow.itsm.incident_info:
           instance:
             host: "{{ sn_instance}}"
@@ -50,14 +50,14 @@
         register: refresh_execute_out
 
       - debug:
-          msg: Ansible is Now Executing the RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task {{ refresh_new_inc_out.record.task_effective_number }} | itsm_oracle_refresh_wrapper
+          msg: Ansible is Executing the Oracle Database RFRSH-2025-Q3 Omni-Client PROD=>CERT=>UAT=>DEV Task {{ refresh_new_inc_out.record.task_effective_number }} | itsm_oracle_refresh_wrapper
 
-      - name: Cache the Refresh Task SYS_ID for All Playbooks to Re-Use | prepare oracle_database_refresh
+      - name: Cache the Refresh Task SYS_ID for All Playbooks to Re-Use | itsm_oracle_refresh_wrapper
         ansible.builtin.set_fact:
           sys_id: "{{ refresh_new_inc_out.record.sys_id }}"
           cacheable: yes
 
-      - name: Write the Refresh Task SYS_ID Variable to the Disk on the CTRL+ Node for the RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task | itsm_oracle_refresh_wrapper
+      - name: Write the Refresh Task SYS_ID Variable to the Temp Disk on CTRL+ Node | itsm_oracle_refresh_wrapper
         copy:
           content: "{{ refresh_new_inc_out.record.sys_id }}"
           dest: "/tmp/refresh_task_sid.txt"
@@ -66,7 +66,7 @@
     - import_playbook: itsm_oracle_refresh_actual_prod.yml
     - import_playbook: itsm_oracle_refresh_actual_dev.yml
     - import_playbook: itsm_oracle_refresh_actual_uat.yml
-    - import_playbook: itsm_oracle_refresh_actual_preprod.yml
+    - import_playbook: itsm_oracle_refresh_actual_cert.yml
     - import_playbook: itsm_oracle_refresh_finish.yml   
 
 

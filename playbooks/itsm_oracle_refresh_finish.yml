@@ -1,6 +1,6 @@
 ---
-    - name: Cleanup after RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task | itsm_oracle_refresh_finish
-      hosts: ansible_ctrl+
+    - name: RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV TemplCAB-Pre-Approved V1.3.Draft | announce oracle_schema_refresh_completion
+      hosts: localhost
       gather_facts: true
       vars_files:
         - vars/main.yml
@@ -8,9 +8,9 @@
       tasks:
      
         - debug:
-            msg: Version 3.2. Ansible is Closing the RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task as Successful | itsm_oracle_refresh_finish
+            msg: Ansible is Closing the Omni-Client Refresh Task as Successful 
 
-        - name: Close ServiceNow Refresh Task as Completed | cleanup oracle_schema_refresh
+        - name: Close ServiceNow Refresh Task as Completed | itsm_oracle_refresh_finish
           servicenow.itsm.incident:
             instance:
               host: "{{ sn_instance}}"
@@ -23,11 +23,11 @@
           register: closing_notes_out
 
         - debug:
-            msg: Ansible is Entering the Following in the Closing Notes (RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV Task) | itsm_oracle_refresh_finish
+            msg: Ansible is Entering the Following in the Closing Notes for the Current Iteration of RFRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV TemplCAB-Pre-Approved V1.3.Draft | itsm_oracle_refresh_finish
 
         - debug: var=closing_notes_out
          
-        - name: Cleanup the Temp Refresh Files so the Next Refresh Wont Fail | itsm_oracle_refresh_finish
+        - name: Cleanup the Temp Refresh Files | itsm_oracle_refresh_finish
           ansible.builtin.file:
             path: /tmp/refresh_task_sid.txt
             state: absent
@@ -35,9 +35,9 @@
           ignore_errors: True
 
         - debug:
-            msg: Ansible Has Flashed the Neuralyzer Flashy Thingy from the Men in Black and Purged SYS-ID from Memory 
+            msg: Ansible Has Flashed the Neuralizer Memory Erazer Thingy to Purge the Task SYS_ID from Memory + Disk | itsm_oracle_refresh_finish
 
         - debug:
-            msg: Ansible Has Now Closed the RFRSH2025Q2 Omni-Client PROD_2_UAT Task as Successful. Thank You and Have a Nice Day!
+            msg: Ansible Has Now Closed the FRSH-2025-Q3 Omni-Client PROD_2_PREPROD-UAT-DEV TemplCAB-Pre-Approved V1.3.Draft Task as Successful. Thank You and Have a Nice Day.
           
        

@@ -13,17 +13,8 @@
 
   - debug: var=ansible_distribution
 
-  - name: Version 2.7. Confirm Local Facts for Each Oracle Instance being Refreshed "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
+  - name: Confirm Local Facts for Each Oracle Instance being Refreshed "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
     debug: var=ansible_local
-
-
-##  - name: Verify with ServiceNow ITSM the Refresh Task is Scheduled for Now, Has Been Approved and is in Implementation State | prepare oracle_database_refresh
-##    template:
-##        src: /etc/ansible/templates/oggca.rsp.j2
-##        dest: /tmp/ogg_add_depl_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_version }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_bu_name }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_environment_type }}_{{ ansible_local.ogg.ogg_fact_general.ogg_fact_next_depl_iterator }}.rsp
-##        owner: oracle
-##        group: oinstall
-##        mode: '0775'
 
   - name: Check if Lockfile Exists or an Earlier Refresh Still Running for "{{ ansible_local.export.localfacts.export_fact_schema }}" schema in the "{{ ansible_local.export.localfacts.export_fact_oracle_sid_name }}" Database on "{{ ansible_local.export.localfacts.export_fact_oracle_local_hostname }}" | itsm_oracle_refresh_actual_dev
     stat:
