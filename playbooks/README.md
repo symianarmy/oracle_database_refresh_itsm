@@ -1,4 +1,4 @@
-Oracle Database Refresh ITSM
+Oracle Database Refresh ITSM Version 2.1.0.0 20250518.001
 =========
 
 This collection of playbooks refreshes one or more lower environment Oracle database schemas from a PROD database schema. It uses the ServiceNow ITSM +Ansible API functionality to request, seek approvals, schedule and auto-execute and/or rollback the refresh tasks unattended. 
