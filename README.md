@@ -10,6 +10,7 @@ This functionality relies on:
  1) Ansible custom facts, such as $ORACLE_HOME or $ORACLE_SID. The facts are either gathered at runtime locally on the hosts, or they are in the Ansible CTRL+ inventory file, or in the VAR file or specified at run time in the CLI. This information can also be supplied by parsing AWS / OCI tags.
  2) Ansible JINJA2 templates for each host. There are several templates. For the ServiceNow refresh task itself (priority, assignments, sheduling, apprvals), a parfile for Oracle export and import. Each template is analyzed by Ansible at run time for each refresh target , and a highly customized export or import parfile is created and used.
  3) Ansible playbooks that are called depending on the refresh type - for example refresh UAT from PROD only, or refresh DEV from UAT. The playbooks also use a basic decision making mechanism to rollback the refresh, if a specific set of errors is displayed by the import and all preliminary remediation protocls are exhausted.
+ 4) A shared S3 bucket or an NFS folder, mounted to all Oracle databases as a directory named DATA_PUMP_DIR. The purpose of it is to create/update/delete export/import parameter files, scripts, logs and dump files. Usually, the PROD instance exports a schema, and then one or more lower environment databases import that dump file sequentially or in parallel. 
  
 Role Variables
 --------------
